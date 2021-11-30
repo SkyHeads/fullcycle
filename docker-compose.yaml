@@ -1,0 +1,22 @@
+version: "3.7"
+
+services:
+  app:
+    build: .
+    entrypoint: dockerize -wait tcp://db:3306 -timeout 40s ./.docker/entrypoint.sh
+    ports:
+      - 3000:3000
+    volumes:
+      - .:/home/node/app
+    depends_on:
+      - db
+
+  db:
+    build: ./.docker/mysql
+    restart: always
+    tty: true
+    environment:
+      - MYSQL_DATABASE=fin
+      - MYSQL_ROOT_PASSWORD=root
+    volumes:
+      - ./.docker/dbdata:/var/lib/mysql
